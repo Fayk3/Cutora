@@ -4,9 +4,6 @@ Cut out backgrounds, AI-upscale to 4×, and resize to exact dimensions — all i
 
 **Built in the open.** Inspect the code, contribute, self-host. MIT licensed.
 
-- Live app: serve this folder and open `index.html` via `http://` (see below)
-- Repo: [Fayk3/Cutora](https://github.com/Fayk3/Cutora) — ★ star count on the site loads live from the GitHub API (never hardcoded)
-
 ## Tools (one studio, three tabs)
 
 - **Remove Background** — local segmentation, hair/fur alpha, erase/restore brushes, undo/redo, checkerboard + before/after, transparent PNG export
