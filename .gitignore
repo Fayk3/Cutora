@@ -1,0 +1,19 @@
+# Dependencies / tooling (if you ever add a build step)
+node_modules/
+dist/
+build/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs / temp
+*.log
+npm-debug.log*
+.tmp/

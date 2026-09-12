@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cutora — Remove backgrounds, upscale &amp; resize images</title>
+<meta name="description" content="Cutora is a local-first image studio: cut out backgrounds, AI-upscale to 4x, and resize to exact dimensions. No uploads, no accounts, no watermark." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+<link rel="icon" type="image/svg+xml" href="./assets/logo.svg" />
+<link rel="apple-touch-icon" href="./assets/logo.svg" />
+<script type="importmap">
+{
+  "imports": {
+    "@imgly/background-removal": "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm"
+  }
+}
+</script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="Cutora home">
+      <svg class="mark" width="32" height="32" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+        <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+        <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="wordmark">cutora</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#studio">Studio</a>
+      <a href="#method">Method</a>
+      <a href="#open-source">Open source</a>
+    </nav>
+    <div class="nav-right">
+      <a id="ghNav" class="gh-link" href="https://github.com/Fayk3/Cutora" target="_blank" rel="noopener" title="View on GitHub">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span id="ghStars" class="gh-stars hidden"></span>
+      </a>
+      <a class="btn primary sm" href="#studio">Open studio</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <p class="eyebrow">Local-first image studio · MIT · No uploads</p>
+    <h1>Cut, enhance &amp; resize.<br />Right in your browser.</h1>
+    <p class="sub">Cutora isolates subjects into transparent PNGs, AI-upscales images to 4×, and resizes to exact dimensions — all on your device. No uploads, no accounts, no watermark.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="#studio">Open studio</a>
+      <a class="btn" href="https://github.com/Fayk3/Cutora" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+    <p class="built-open">Built in the open. Inspect the code, contribute, self-host.</p>
+    <ul class="formats" aria-label="Supported formats">
+      <li>JPG</li><li>JPEG</li><li>PNG</li><li>WEBP</li>
+      <li class="limit">25 MB max</li>
+    </ul>
+  </section>
+
+  <!-- STUDIO -->
+  <section id="studio" class="studio" aria-label="Cutora studio">
+    <div class="tool-tabs" role="tablist" aria-label="Studio tools">
+      <button class="tool-tab active" data-tool="bg" role="tab" aria-selected="true" aria-controls="panel-bg" id="tab-bg" type="button"><b>Remove Background</b><span>Transparent cutouts</span></button>
+      <button class="tool-tab" data-tool="upscale" role="tab" aria-selected="false" aria-controls="panel-upscale" id="tab-upscale" type="button"><b>AI Upscaler</b><span>Enhance to 2× · 4×</span></button>
+      <button class="tool-tab" data-tool="resize" role="tab" aria-selected="false" aria-controls="panel-resize" id="tab-resize" type="button"><b>Resize Image</b><span>Exact dimensions</span></button>
+    </div>
+
+    <!-- ============ TOOL 1: BACKGROUND ============ -->
+    <div id="panel-bg" role="tabpanel" aria-labelledby="tab-bg">
+    <div id="uploadView" class="panel upload-panel">
+      <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload image">
+        <div class="dz-mark">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+            <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+            <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>Drop an image to cut it out</h2>
+        <p>or <button id="browseBtn" class="link-btn" type="button">browse files</button> · paste from clipboard <kbd>Ctrl</kbd>+<kbd>V</kbd></p>
+        <div class="dz-actions">
+          <button id="pickBtn" class="btn primary" type="button">Select image</button>
+          <button id="sampleBtn" class="btn quiet" type="button">Try a sample</button>
+        </div>
+        <p class="fine">JPG · JPEG · PNG · WEBP — up to 25 MB. Files stay on this device.</p>
+        <input id="fileInput" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden />
+      </div>
+
+      <div id="statusStrip" class="status-strip hidden">
+        <div class="status-row">
+          <div id="statusThumb" class="status-thumb"></div>
+          <div class="status-info">
+            <div id="statusTitle" class="status-title">Uploading…</div>
+            <div id="statusSub" class="status-sub">Validating file</div>
+          </div>
+          <div id="statusPct" class="status-pct">0%</div>
+        </div>
+        <div class="progress"><div id="progressBar" class="progress-fill"></div></div>
+        <div id="statusLog" class="status-log">Preparing…</div>
+      </div>
+    </div>
+
+    <div id="workView" class="hidden">
+      <div class="work-grid">
+        <div class="panel preview-panel">
+          <div class="preview-head">
+            <div class="seg" role="tablist" aria-label="Preview mode">
+              <button id="tabResult" class="seg-btn active" type="button">Result</button>
+              <button id="tabCompare" class="seg-btn" type="button">Compare</button>
+            </div>
+            <div class="preview-actions">
+              <button id="zoomOutBtn" class="icon-btn" title="Zoom out" type="button">−</button>
+              <span id="zoomLabel" class="zoom-label">100%</span>
+              <button id="zoomInBtn" class="icon-btn" title="Zoom in" type="button">+</button>
+              <button id="zoomResetBtn" class="icon-btn wide" title="Reset zoom and pan" type="button">Reset view</button>
+            </div>
+          </div>
+
+          <div id="viewport" class="viewport checker">
+            <div id="canvasStage" class="stage">
+              <canvas id="resultCanvas"></canvas>
+              <div id="brushCursor" class="brush-cursor hidden"></div>
+            </div>
+            <div id="processingOverlay" class="processing-overlay hidden">
+              <svg class="loader-mark" width="44" height="44" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+                <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+                <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="proc-title">Cutting out the subject…</div>
+              <div class="proc-sub" id="procSub">Loading the local segmentation model (first run fetches ~40 MB)</div>
+              <div class="progress slim"><div id="progressBar2" class="progress-fill"></div></div>
+              <div id="procPct" class="proc-pct">0%</div>
+            </div>
+          </div>
+
+          <div id="compareWrap" class="compare-wrap hidden">
+            <div class="compare-top"><span>Before</span><span>After</span></div>
+            <div id="compareBox" class="compare-box">
+              <img id="compareOriginal" alt="Original" />
+              <div id="compareResultWrap" class="compare-result checker">
+                <img id="compareResult" alt="Cutout result" />
+              </div>
+              <input id="compareSlider" type="range" min="0" max="100" value="50" aria-label="Before and after comparison slider" />
+              <div id="compareHandle" class="compare-handle"><div class="line"></div><div class="knob">↔</div></div>
+            </div>
+          </div>
+
+          <div class="hint-row">
+            <span id="toolHint">Scroll to zoom, drag to pan. Pick <b>Erase</b> to clean up leftovers.</span>
+            <span id="imgMeta" class="meta"></span>
+          </div>
+        </div>
+
+        <div class="panel controls-panel">
+          <div class="done-row" id="successBanner">
+            <span class="done-dot"></span>
+            <div><strong>Cutout ready</strong><div id="successSub" class="muted">Subject isolated with soft alpha edges</div></div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Backdrop</div>
+            <div class="swatches">
+              <button class="swatch active" data-bg="transparent" type="button" title="Transparent"><span class="sw checker"></span>Transparent</button>
+              <button class="swatch" data-bg="#ffffff" type="button" title="White"><span class="sw" style="background:#fff"></span>White</button>
+              <button class="swatch" data-bg="#141311" type="button" title="Ink"><span class="sw" style="background:#141311"></span>Ink</button>
+              <label class="swatch custom" title="Custom color"><span class="sw" id="customSw" style="background:#D9480F"></span>Custom<input id="bgColor" type="color" value="#D9480F" /></label>
+            </div>
+            <p class="muted small">Preview only — export is always a transparent PNG.</p>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Refine</div>
+            <div class="tool-row">
+              <button id="eraseBtn" class="tool-btn" type="button">Erase</button>
+              <button id="restoreBtn" class="tool-btn" type="button">Restore</button>
+              <button id="panBtn" class="tool-btn active" type="button">Pan</button>
+            </div>
+            <div class="slider-row">
+              <label for="brushSize">Brush size <b id="brushSizeVal">40px</b></label>
+              <input id="brushSize" type="range" min="4" max="200" value="40" />
+            </div>
+            <div class="slider-row">
+              <label for="brushSoft">Feather <b id="brushSoftVal">50%</b></label>
+              <input id="brushSoft" type="range" min="0" max="90" value="50" />
+            </div>
+            <div class="tool-row">
+              <button id="undoBtn" class="btn small" type="button" disabled>Undo</button>
+              <button id="redoBtn" class="btn small" type="button" disabled>Redo</button>
+              <button id="resetEditsBtn" class="btn small quiet" type="button">Reset</button>
+            </div>
+          </div>
+
+          <div class="group actions">
+            <button id="downloadBtn" class="btn primary big" type="button">Download PNG</button>
+            <div class="btn-grid">
+              <button id="replaceBtn" class="btn" type="button">Replace image</button>
+              <button id="reprocessBtn" class="btn" type="button">Cut again</button>
+            </div>
+            <button id="newImageBtn" class="btn quiet full" type="button">Process another image</button>
+            <div id="fileInfo" class="file-info"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="errorBox" class="error-box hidden">
+      <strong>Something went wrong — <span id="errorTitle">error</span></strong>
+      <p id="errorMsg"></p>
+      <div class="error-actions">
+        <button id="retryBtn" class="btn small" type="button">Try again</button>
+        <button id="dismissErrorBtn" class="btn small quiet" type="button">Dismiss</button>
+      </div>
+    </div>
+    </div><!-- /panel-bg -->
+
+    <!-- ============ TOOL 2: AI UPSCALER ============ -->
+    <div id="panel-upscale" role="tabpanel" aria-labelledby="tab-upscale" class="hidden">
+    <div class="panel upload-panel">
+      <div id="upDrop" class="dropzone" role="button" tabindex="0" aria-label="Upload image to upscale">
+        <div class="dz-mark">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+            <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+            <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>Drop an image to enhance it</h2>
+        <p>or <button id="upBrowse" class="link-btn" type="button">browse files</button> · paste from clipboard <kbd>Ctrl</kbd>+<kbd>V</kbd></p>
+        <div class="dz-actions">
+          <button id="upPick" class="btn primary" type="button">Select image</button>
+          <button id="upSample" class="btn quiet" type="button">Try a sample</button>
+        </div>
+        <p class="fine">JPG · JPEG · PNG · WEBP — up to 25 MB. ESRGAN runs on your GPU, files stay here.</p>
+        <input id="upFile" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden />
+      </div>
+
+      <div id="upStatus" class="status-strip hidden">
+        <div class="status-row">
+          <div id="upThumb" class="status-thumb"></div>
+          <div class="status-info">
+            <div id="upTitle" class="status-title">Uploading…</div>
+            <div id="upSub" class="status-sub">Validating file</div>
+          </div>
+          <div id="upPct" class="status-pct">0%</div>
+        </div>
+        <div class="progress"><div id="upBar" class="progress-fill"></div></div>
+        <div id="upLog" class="status-log">Preparing…</div>
+      </div>
+    </div>
+
+    <div id="upWork" class="hidden">
+      <div class="work-grid">
+        <div class="panel preview-panel">
+          <div class="preview-head">
+            <span class="panel-label">Before / After</span>
+            <div class="preview-actions">
+              <button id="upZoomOut" class="icon-btn" title="Zoom out" type="button">−</button>
+              <span id="upZoomLabel" class="zoom-label">100%</span>
+              <button id="upZoomIn" class="icon-btn" title="Zoom in" type="button">+</button>
+              <button id="upZoomReset" class="icon-btn wide" title="Reset zoom and pan" type="button">Reset view</button>
+            </div>
+          </div>
+
+          <div id="upCompareBox" class="compare-box zoomable">
+            <div id="upZoomWrap" class="up-zoomwrap">
+              <img id="upBefore" alt="Original" />
+              <div id="upAfterWrap" class="compare-result">
+                <img id="upAfter" alt="Enhanced result" />
+              </div>
+              <div id="upHandle" class="compare-handle up-handle"><div class="line"></div><div class="knob">↔</div></div>
+            </div>
+            <input id="upSlider" class="up-sliderbar" type="range" min="0" max="100" value="50" aria-label="Before and after comparison slider" />
+            <div id="upProcOverlay" class="processing-overlay hidden">
+              <svg class="loader-mark" width="44" height="44" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+                <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+                <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="proc-title">Enhancing detail…</div>
+              <div class="proc-sub" id="upProcSub">Loading the enhancement engine…</div>
+              <div class="progress slim"><div id="upBar2" class="progress-fill"></div></div>
+              <div id="upPct2" class="proc-pct">0%</div>
+            </div>
+          </div>
+
+          <div class="hint-row">
+            <span id="upHint">Drag to pan when zoomed · scroll to zoom · bottom slider compares.</span>
+            <span id="upMeta" class="meta"></span>
+          </div>
+        </div>
+
+        <div class="panel controls-panel">
+          <div class="done-row hidden" id="upDone">
+            <span class="done-dot"></span>
+            <div><strong>Enhanced</strong><div id="upDoneSub" class="muted">—</div></div>
+          </div>
+
+          <div class="group" style="border-top:none;padding-top:0">
+            <div class="group-title">Upscale factor</div>
+            <div class="seg full" role="group" aria-label="Upscale factor">
+              <button id="upScale2" class="seg-btn active" type="button">2×</button>
+              <button id="upScale4" class="seg-btn" type="button">4×</button>
+            </div>
+          </div>
+
+          <div class="group actions" style="border-top:none;padding-top:0">
+            <button id="upStart" class="btn primary big" type="button">Enhance 2×</button>
+            <p class="muted small">ESRGAN-Slim sharpens faces, text and edges. First run downloads ~3 MB of engine + weights; inputs over 1024px are fitted first.</p>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Output</div>
+            <div class="kv"><span>Original</span><b id="upOrigRes">—</b></div>
+            <div class="kv"><span>Enhanced</span><b id="upOutRes">—</b></div>
+            <div class="kv"><span>Compute</span><b id="upBackend">engine loads on first run</b></div>
+          </div>
+
+          <div class="group actions">
+            <button id="upDownload" class="btn primary big" type="button" disabled>Download PNG</button>
+            <div class="btn-grid">
+              <button id="upAgain" class="btn" type="button">Enhance again</button>
+              <button id="upNew" class="btn quiet" type="button">New image</button>
+            </div>
+            <div id="upFileInfo" class="file-info"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="upError" class="error-box hidden">
+      <strong>Something went wrong — <span>upscaler</span></strong>
+      <p id="upErrorMsg"></p>
+      <div class="error-actions">
+        <button id="upRetry" class="btn small" type="button">Try again</button>
+        <button id="upDismiss" class="btn small quiet" type="button">Dismiss</button>
+      </div>
+    </div>
+    </div><!-- /panel-upscale -->
+
+    <!-- ============ TOOL 3: RESIZER ============ -->
+    <div id="panel-resize" role="tabpanel" aria-labelledby="tab-resize" class="hidden">
+    <div class="panel upload-panel">
+      <div id="rsDrop" class="dropzone" role="button" tabindex="0" aria-label="Upload image to resize">
+        <div class="dz-mark">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+            <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+            <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>Drop an image to resize it</h2>
+        <p>or <button id="rsBrowse" class="link-btn" type="button">browse files</button> · paste from clipboard <kbd>Ctrl</kbd>+<kbd>V</kbd></p>
+        <div class="dz-actions">
+          <button id="rsPick" class="btn primary" type="button">Select image</button>
+          <button id="rsSample" class="btn quiet" type="button">Try a sample</button>
+        </div>
+        <p class="fine">JPG · JPEG · PNG · WEBP — up to 25 MB. Resized in a worker, files stay here.</p>
+        <input id="rsFile" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden />
+      </div>
+    </div>
+
+    <div id="rsWork" class="hidden">
+      <div class="work-grid">
+        <div class="panel preview-panel">
+          <div class="preview-head">
+            <span class="panel-label">Resized preview</span>
+            <span class="zoom-label" id="rsOrigDims">—</span>
+          </div>
+          <div class="rs-previewbox">
+            <img id="rsPreview" alt="Resized preview" />
+          </div>
+          <div class="hint-row">
+            <span>Preview is fitted to the panel — download keeps full output pixels.</span>
+            <span id="rsNote" class="meta">—</span>
+          </div>
+        </div>
+
+        <div class="panel controls-panel">
+          <div class="group" style="border-top:none;padding-top:0">
+            <div class="group-title">Dimensions <span class="muted" style="text-transform:none;letter-spacing:0">· max 12000px</span></div>
+            <div class="dim-row">
+              <label>Width<input id="rsW" type="number" min="1" max="12000" step="1" inputmode="numeric" /></label>
+              <span class="dim-x">×</span>
+              <label>Height<input id="rsH" type="number" min="1" max="12000" step="1" inputmode="numeric" /></label>
+            </div>
+            <div class="tool-row" style="margin-top:8px">
+              <button id="rsLock" class="tool-btn active" type="button" aria-pressed="true">🔗 Ratio locked</button>
+            </div>
+            <div class="slider-row">
+              <label for="rsPct">Scale <b id="rsPctVal">100%</b> of original</label>
+              <input id="rsPct" type="range" min="1" max="400" value="100" />
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Presets</div>
+            <div class="preset-grid">
+              <button class="preset-btn rs-preset" data-w="1920" data-h="1080" type="button">HD <span>1920×1080</span></button>
+              <button class="preset-btn rs-preset" data-w="1280" data-h="720" type="button">720p <span>1280×720</span></button>
+              <button class="preset-btn rs-preset" data-w="1080" data-h="1080" type="button">Square <span>1080×1080</span></button>
+              <button class="preset-btn rs-preset" data-w="1080" data-h="1920" type="button">Story <span>1080×1920</span></button>
+              <button class="preset-btn rs-preset" data-w="512" data-h="512" type="button">Icon <span>512×512</span></button>
+              <button class="preset-btn rs-preset" data-w="256" data-h="256" type="button">Thumb <span>256×256</span></button>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Format</div>
+            <div class="dim-row">
+              <label class="grow">Output<select id="rsFormat">
+                <option value="image/png" selected>PNG — lossless</option>
+                <option value="image/jpeg">JPEG — small</option>
+                <option value="image/webp">WebP — modern</option>
+              </select></label>
+            </div>
+            <div class="slider-row hidden" id="rsQRow">
+              <label for="rsQuality">Quality <b id="rsQVal">92%</b></label>
+              <input id="rsQuality" type="range" min="40" max="100" value="92" />
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Output</div>
+            <div class="kv"><span>Dimensions</span><b id="rsOutDims">—</b></div>
+            <div class="kv"><span>File size</span><b id="rsOutSize">—</b></div>
+          </div>
+
+          <div class="group actions">
+            <button id="rsDownload" class="btn primary big" type="button" disabled>Download image</button>
+            <button id="rsNew" class="btn quiet full" type="button" style="margin-top:8px">New image</button>
+            <div id="rsFileInfo" class="file-info"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /panel-resize -->
+  </section>
+
+  <!-- METHOD -->
+  <section id="method" class="method" aria-label="How Cutora works">
+    <h2 class="section-title">Three tools, one studio.</h2>
+    <div class="method-grid">
+      <div class="method-card"><span class="step">01</span><h3>Cut it out</h3><p>Separate subject from backdrop with soft alpha edges, then erase or restore detail.</p><p><a href="#studio" data-tool-link="bg">Open background remover →</a></p></div>
+      <div class="method-card"><span class="step">02</span><h3>Enhance it</h3><p>Upscale 2× or 4× with an ESRGAN model that rebuilds faces, text and edges.</p><p><a href="#studio" data-tool-link="upscale">Open AI upscaler →</a></p></div>
+      <div class="method-card"><span class="step">03</span><h3>Size it right</h3><p>Hit exact dimensions with ratio lock, presets and format control — rendered live.</p><p><a href="#studio" data-tool-link="resize">Open resizer →</a></p></div>
+    </div>
+    <p class="local-note">Local-first: everything runs on your device. AI models download once, are cached by your browser, and your images never leave this tab.</p>
+  </section>
+
+  <!-- OPEN SOURCE -->
+  <section id="open-source" class="oss" aria-label="Open source">
+    <div class="oss-panel">
+      <div class="oss-main">
+        <p class="eyebrow light">Open source · MIT</p>
+        <h2>Built in the open.</h2>
+        <p>Cutora is free software. Inspect the code, contribute a fix, or self-host it for your team. No accounts, no tracking, no lock-in.</p>
+        <div class="oss-actions">
+          <a class="btn light" href="https://github.com/Fayk3/Cutora" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+            View on GitHub
+          </a>
+          <a id="ghStarBtn" class="btn accent" href="https://github.com/Fayk3/Cutora" target="_blank" rel="noopener">★ Star on GitHub <span id="ghStarsBtn" class="star-count hidden"></span></a>
+        </div>
+        <p class="oss-links"><a href="https://github.com/Fayk3/Cutora/fork" target="_blank" rel="noopener">Fork</a> · <a href="https://github.com/Fayk3/Cutora/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a> · <a href="https://github.com/Fayk3/Cutora/issues" target="_blank" rel="noopener">Issues</a></p>
+      </div>
+      <div class="repo-card">
+        <div class="repo-head">
+          <svg viewBox="0 0 16 16" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          <a href="https://github.com/Fayk3/Cutora" target="_blank" rel="noopener">Fayk3/Cutora</a>
+          <span class="license">MIT</span>
+        </div>
+        <p class="repo-desc">Local-first image studio: background removal, AI upscaling, resizing. Vanilla JS, no build step, lazily-loaded models.</p>
+        <div class="repo-meta">
+          <span>★ <b id="ghStarsCard">—</b> stars</span>
+          <span id="ghNote" class="repo-note">Live from the GitHub API</span>
+        </div>
+        <code class="clone">git clone https://github.com/Fayk3/Cutora.git</code>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <span class="foot-brand">
+      <svg width="20" height="20" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+        <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+        <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <b>cutora</b> — local-first image studio.
+    </span>
+    <nav aria-label="Footer">
+      <a href="#studio" data-tool-link="bg">Background</a>
+      <a href="#studio" data-tool-link="upscale">Upscaler</a>
+      <a href="#studio" data-tool-link="resize">Resizer</a>
+      <a href="https://github.com/Fayk3/Cutora" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <span class="mit">MIT · <span id="year">2026</span></span>
+  </div>
+</footer>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/opensource.js"></script>
+</body>
+</html>

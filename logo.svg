@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-labelledby="cutoraLogoTitle">
+  <title id="cutoraLogoTitle">Cutora — cut mark</title>
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="#D9480F"/>
+  <path d="M17 31.5 29.5 19c2.5-2.5 6-1 4.5 2L30.5 28c-1 2-3 3.5-5.5 3.5H17Z" fill="#fff"/>
+  <path d="M19 17.5h11c1.7 0 2.8 1.8 1.9 3.2L28.5 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
