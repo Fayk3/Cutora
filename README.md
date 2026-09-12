@@ -1,4 +1,4 @@
-# cutora — local-first image studio
+# Cutora — local-first image studio
 
 Cut out backgrounds, AI-upscale to 4×, and resize to exact dimensions — all in your browser. No uploads, no accounts, no watermark.
 
